@@ -70,6 +70,7 @@ def get_details(url):
         image_items = html.find_all('figure', {'class': 'productView-image'})
         for image_item in image_items:
             img = image_item.find('a').get('href')
+            img = img.replace('?c=2&imbypass=on','').strip()
             images.append(img)
     except:
         pass
