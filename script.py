@@ -27,7 +27,7 @@ def get_details(url):
     try:
         price = html.find_all("span", {"class":"price--withoutTax"})[0].get_text()
         price = price.replace(",", "")
-        stamp['price'] = price.replace('$','') # This website is in Pounds so need to use this symbol
+        stamp['price'] = price.replace('£','') # This website is in Pounds so need to use this symbol
     except:
         stamp['price'] = None
 
@@ -62,7 +62,7 @@ def get_details(url):
         stamp['raw_text'] = None
 
     # This website is in pounds, i.e. GBP
-    stamp['currency'] = "USD"
+    stamp['currency'] = "GBP"
 
     # image_urls should be a list
     images = []
@@ -109,7 +109,8 @@ def get_category_items(category_url):
 
     try:
         for item in category_html.select('h4.card-title a'):
-            items.append(item.get('href'))
+            item_link = item.get('href') + '?setCurrencyId=3'
+            items.append(item_link)
     except: 
         pass
 
