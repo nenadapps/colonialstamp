@@ -1,5 +1,5 @@
 import datetime
-from random import randint
+from random import randint,shuffle
 from time import sleep
 from urllib.request import Request, urlopen
 from bs4 import BeautifulSoup
@@ -27,7 +27,7 @@ def get_details(url):
     try:
         price = html.find_all("span", {"class":"price--withoutTax"})[0].get_text()
         price = price.replace(",", "")
-        stamp['price'] = price.replace('£','') # This website is in Pounds so need to use this symbol
+        stamp['price'] = price.replace('$','') # This website is in Pounds so need to use this symbol
     except:
         stamp['price'] = None
 
@@ -38,16 +38,22 @@ def get_details(url):
         stamp['title'] = None
 
     try:
-        sku = get_info_value(html, 'SKU:')
-        stamp['sku']=sku
+        category = html.find_all("a", {"class":"breadcrumb-label"})[1].get_text()
+        stamp['category'] = category
     except:
-        stamp['sku']=None
+        stamp['category'] = None
+
+    try:
+        sku = get_info_value(html, 'SKU:')
+        stamp['sku'] = sku
+    except:
+        stamp['sku'] = None
 
     try:
         grade = get_info_value(html, 'Quality:')
-        stamp['grade']=grade
+        stamp['grade'] = grade
     except:
-        stamp['grade']=None
+        stamp['grade'] = None
 
     try:
         raw_text = html.find_all("div", {"id":"tab-description"})[0].get_text()
@@ -56,7 +62,7 @@ def get_details(url):
         stamp['raw_text'] = None
 
     # This website is in pounds, i.e. GBP
-    stamp['currency'] = "GBP"
+    stamp['currency'] = "USD"
 
     # image_urls should be a list
     images = []
@@ -75,7 +81,9 @@ def get_details(url):
     stamp['scrape_date'] = scrape_date
 
     stamp['url'] = url
-    sleep(randint(25,65)) #Waiting 25-65s before next request
+    print(stamp)
+    print('+++++++++++++')
+    sleep(randint(25,65))
     return stamp
 
 def get_info_value(html, info_name):
@@ -89,9 +97,36 @@ def get_info_value(html, info_name):
             break
     
     return info_value
-        
 
-url = 'https://colonialstamps.com/Great-Britain-Scott-40-Gibbons-87-Used-Stamp-65248/'
-stamp = get_details(url)
-print(stamp)
-         
+def get_category_items(category_url):
+    items = []
+    next_url = ''
+
+    try:
+        category_html = get_html(category_url)
+    except:
+        return items, next_url
+
+    try:
+        for item in category_html.select('h4.card-title a'):
+            items.append(item.get('href'))
+    except: 
+        pass
+
+    try:
+        next_url = category_html.select('link[rel=next]')[0].get('href')
+    except:
+        pass
+
+    shuffle(items)
+
+    return items, next_url 
+        
+# start category url 
+category_url = 'https://colonialstamps.com/mint-and-used/'
+while(category_url):
+    category_items, category_url = get_category_items(category_url)
+    # loop through all category items
+    for category_item in category_items:
+         stamp = get_details(category_item) 
+        
