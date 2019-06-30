@@ -1,4 +1,6 @@
 import datetime
+from random import randint
+from time import sleep
 from urllib.request import Request, urlopen
 from bs4 import BeautifulSoup
 
@@ -25,7 +27,7 @@ def get_details(url):
     try:
         price = html.find_all("span", {"class":"price--withoutTax"})[0].get_text()
         price = price.replace(",", "")
-        stamp['price'] = price.replace('$','')
+        stamp['price'] = price.replace('£','') # This website is in Pounds so need to use this symbol
     except:
         stamp['price'] = None
 
@@ -53,18 +55,16 @@ def get_details(url):
     except:
         stamp['raw_text'] = None
 
-    currency = "USD"
-    stamp['currency'] = currency
+    # This website is in pounds, i.e. GBP
+    stamp['currency'] = "GBP"
 
     # image_urls should be a list
-    images = ""
+    images = []
     try:
         image_items = html.find_all('figure', {'class': 'productView-image'})
         for image_item in image_items:
             img = image_item.find('a').get('href')
-            if(images):
-                images = images + ','
-            images = images + img
+            images.append(img)
     except:
         pass
 
@@ -75,7 +75,7 @@ def get_details(url):
     stamp['scrape_date'] = scrape_date
 
     stamp['url'] = url
-
+    sleep(randint(25,65)) #Waiting 25-65s before next request
     return stamp
 
 def get_info_value(html, info_name):
