@@ -60,6 +60,7 @@ def get_html(url):
     return html_content
 
 def get_details(url):
+    
     stamp = {}
     try:
        html = get_html(url)
@@ -67,11 +68,16 @@ def get_details(url):
        return stamp
 
     try:
-        price = html.find_all("span", {"class":"price--withoutTax"})[0].get_text()
-        price = price.replace(",", "")
-        stamp['price'] = price.replace('£','') # This website is in Pounds so need to use this symbol
-    except:
-        stamp['price'] = None
+        price_text = html.select(".productView-price")[0].get_text().strip()
+        if price_text == "Contact us for Pricing":
+            price = "contact us"
+        else:
+            price = html.find_all("span", {"class":"price--withoutTax"})[0].get_text()
+            price = price.replace(",", "")
+            price = price.replace('£','')
+        stamp['price'] = price
+    except: 
+        pass
 
     try:
         name = html.find_all("h1", {"class":"productView-title"})[0].get_text()
