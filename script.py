@@ -1,5 +1,4 @@
 # colonial_stamps_com
-import datetime
 '''
 import os
 import sqlite3
@@ -11,6 +10,7 @@ import socket
 import socks
 import requests
 '''
+import datetime
 from random import randint, shuffle
 from time import sleep
 from urllib.request import Request, urlopen
@@ -51,7 +51,7 @@ hdr = {'User-Agent': "'"+UA.random+"'",
 def get_html(url):
     html_content = ''
     try:
-        req = Request(url, headers={'User-Agent': 'Mozilla/5.0'}) #hdr)
+        req = Request(url, headers= {'User-Agent':'Mozilla/5.0'})#hdr )
         html_page = urlopen(req).read()
         html_content = BeautifulSoup(html_page, "html.parser")
     except: 
@@ -304,12 +304,13 @@ def db_update_image_download(stamp):
     print ("all updated")
     print ("++++++++++++")
     sleep(randint(120,240)) 
-'''
-        
+'''      
 # start category url 
 count = 0
-#connectTor()
-#showmyip()
+'''
+connectTor()
+showmyip()
+'''
 selection = input('Mint_Used or Cover_Postal_History: ')
 item_dict = {'Mint_Used':'https://colonialstamps.com/mint-and-used/',
             'Cover_Postal_History':'https://colonialstamps.com/covers-and-postal-history/'}
@@ -322,8 +323,8 @@ while(category_url):
     for category_item in category_items:
         if count > randint(75,156):
             sleep(randint(500,2000))
-            #connectTor()
-            #showmyip()
+            #renew_tor()
+            showmyip()
             count = 0
         else:
             pass
@@ -339,5 +340,5 @@ while(category_url):
         else:
             break
         db_update_image_download(stamp)
-        count += 1
         '''
+        count += 1
